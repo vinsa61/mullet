@@ -1,22 +1,43 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 import { formatAddress } from "@/utils/formatting";
+import { WalletInfo } from "./WalletInfo";
 
 export function ConnectWallet() {
   const { address, isConnected } = useAccount();
   const { connect, connectors, isPending } = useConnect();
   const { disconnect } = useDisconnect();
 
+  // --- THE FIX ---
+  // State to track if the component has mounted on the client
+  const [isClient, setIsClient] = useState(false);
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // On the server or during the initial client render, return nothing.
+  // This ensures the server and client HTML match.
+  if (!isClient) {
+    return null;
+  }
+  // --- END FIX ---
+
   if (isConnected) {
     return (
-      <div className="flex items-center gap-4">
-        <span>Connected: {formatAddress(address)}</span>
-        <button
-          onClick={() => disconnect()}
-          className="px-4 py-2 bg-red-500 text-white rounded"
-        >
-          Disconnect
-        </button>
-      </div>
+      <>
+        <div className="flex items-center gap-4">
+          <span>Connected: {formatAddress(address)}</span>
+          <button
+            onClick={() => disconnect()}
+            className="px-4 py-2 bg-red-500 text-white rounded"
+          >
+            Disconnect
+          </button>
+        </div>
+        <WalletInfo />
+      </>
     );
   }
 
