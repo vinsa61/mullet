@@ -1,19 +1,12 @@
+"use client";
+
 import "./globals.css";
 
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { WagmiProvider } from "wagmi";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { config } from "../config/wagmi";
 
-import Providers from "@/app/providers";
-
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-
-export const metadata: Metadata = {
-  title: {
-    default: "Nextjs Starter Template",
-    template: "%s | Nextjs Starter Template",
-  },
-  description: "Nextjs 14.2.1 + Tailwind CSS starter template",
-};
+const queryClient = new QueryClient();
 
 export default function RootLayout({
   children,
@@ -21,9 +14,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <Providers>{children}</Providers>
+    <html>
+      <body>
+        <WagmiProvider config={config}>
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
+        </WagmiProvider>
       </body>
     </html>
   );
